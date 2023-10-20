@@ -58,11 +58,14 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
     private static final int REF_ELEMENT_SHIFT;
     private static final Object HAS_NEXT = new Object();
     static {
+        // MOJO - on Morello pointers are 16 bytes, so this if-else block needed updating
         final int scale = UnsafeAccess.UNSAFE.arrayIndexScale(Object[].class);
         if (4 == scale) {
             REF_ELEMENT_SHIFT = 2;
         } else if (8 == scale) {
             REF_ELEMENT_SHIFT = 3;
+        } else if (16 == scale) {
+            REF_ELEMENT_SHIFT = 4;
         } else {
             throw new IllegalStateException("Unknown pointer size");
         }

@@ -50,11 +50,14 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
     private static final long REF_ARRAY_BASE;
     private static final int REF_ELEMENT_SHIFT;
     static {
+        // MOJO - on Morello pointers are 16 bytes, so this if-else block needed updating
         final int scale = UnsafeAccess.UNSAFE.arrayIndexScale(Object[].class);
         if (4 == scale) {
             REF_ELEMENT_SHIFT = 2 + SPARSE_SHIFT;
         } else if (8 == scale) {
             REF_ELEMENT_SHIFT = 3 + SPARSE_SHIFT;
+        } else if (16 == scale) {
+            REF_ELEMENT_SHIFT = 4 + SPARSE_SHIFT;
         } else {
             throw new IllegalStateException("Unknown pointer size");
         }
